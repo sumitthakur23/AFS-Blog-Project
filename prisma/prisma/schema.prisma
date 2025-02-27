@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// to sync schema and table we run migration command ---> npx prisma migrate dev --name init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  blogs   Blog[]
+  password String
+  like Like[]
+  isverify Boolean @default(false)
+  dislike dislike[]
+}
+//Relation usi model mein bnega jisme foreign key present hai
+model Blog{
+  id Int @id @default(autoincrement())
+  Title String
+  description String
+  author_id Int
+  author User @relation(fields: [author_id],references: [id])
+  like Like[]
+  likecount Int @default(0)
+  dislike dislike[]
+  dislikecount Int @default(0)
+}
+
+model Like{
+  id Int @id @default(autoincrement())
+  author_id Int @unique
+  blog_id Int
+  user User @relation(fields: [author_id],references: [id])
+  blog Blog @relation(fields: [blog_id],references: [id])
+}
+
+model dislike{
+  id Int @id @default(autoincrement())
+  author_id Int @unique
+  blog_id Int
+  user User @relation(fields: [author_id],references: [id])
+  blog Blog @relation(fields: [blog_id],references: [id])
+}
+
+model token{
+  id Int @id @default(autoincrement())
+  token Int
+  userid Int 
+}
